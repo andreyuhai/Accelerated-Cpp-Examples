@@ -1,10 +1,6 @@
 #include "Vector.h"
 #include <iostream>
 
-template <class T> void deneme(const T& v) {
-	std::cout << v << std::endl;
-} 
-
 template <class T> Vec<T>& Vec<T>::operator=(const Vec& rhs) {
 	// Check for self-assignment
 	if(&rhs != this) {
@@ -17,6 +13,37 @@ template <class T> Vec<T>& Vec<T>::operator=(const Vec& rhs) {
 	}
 
 	return *this;
+}
+
+template <class T> void Vec<T>::clear() {
+	if(data)
+		uncreate();	
+}
+
+template <class T> typename Vec<T>::iterator Vec<T>::erase(iterator position) {
+		
+	size_type new_size = size() - 1;
+	iterator new_data = alloc.allocate(new_size);
+	
+	// To return the appropriate iterator to the last element that followed the erased one
+	ptrdiff_t position_index = position - data;
+
+	if(position == data) {
+		std::uninitialized_copy(data + 1, avail, new_data);
+	} else if(position < avail) {
+		// With the inner uninitialized_copy function first we copy the range before the element that position points to
+		// And then with the outer uninitialized_copy function we copy the range after the element that position points to
+		std::uninitialized_copy(position + 1, avail, std::uninitialized_copy(data, position, new_data));
+	}
+
+	// return the old space
+	uncreate(); 
+
+	// reset pointers to point to the newly allocated space
+	data = new_data;
+	limit = avail = data + new_size;
+
+	return new_data + position_index;
 }
 
 template <class T> void Vec<T>::uncreate() {

@@ -1,8 +1,5 @@
 #include <memory>
 
-template <class T> void deneme(const T&);
-
-
 template <class T> class Vec {
 	public:
 		typedef T* iterator;
@@ -18,7 +15,7 @@ template <class T> class Vec {
 		T& operator[](size_type i) { return data[i]; }
 		const T& operator[](size_type i) const { return data[i]; }
 		Vec& operator=(const Vec&);
-		size_type size() const { return limit - data; }
+		size_type size() const { return avail - data; }
 
 		iterator begin() {return data; }
 		const_iterator begin() const { return data; }
@@ -27,6 +24,8 @@ template <class T> class Vec {
 		const_iterator end() const { return avail; }
 
 		void push_back(const T&);
+		void clear();
+		iterator erase(iterator position);
 	private:
 		iterator data; // pointer to the first element in the Vec
 		iterator avail; // pointer to (one past) the last constructed element
